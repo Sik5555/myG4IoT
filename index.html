@@ -1,191 +1,163 @@
 <!DOCTYPE html>
-<html>
+<html lang="th">
+
 <head>
   <meta charset="UTF-8">
-  <title>ควบคุมและแสดงสถานะอุปกรณ์</title>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script&gt;
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script&gt;
+  <title>สถานะอุปกรณ์แบบอลังการ</title>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #f0f4f8;
+      margin: 0;
+      padding: 0;
+      font-family: 'Prompt', sans-serif;
+      height: 100vh;
+      background: linear-gradient(135deg, #4b6cb7, #182848);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: white;
+      overflow: auto;
+    }
+
+    .container {
       text-align: center;
-      padding-top: 50px;
+      background: rgba(255, 255, 255, 0.08);
+      padding: 40px 50px;
+      margin: 20px;
+      border-radius: 30px;
+      box-shadow: 0 0 60px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(15px);
+      animation: fadeIn 1.5s ease;
     }
 
     h1 {
-      margin-bottom: 40px;
-    }
-
-    .status-container {
-      display: flex;
-      justify-content: center;
-      gap: 40px;
-      margin-bottom: 40px;
-      flex-wrap: wrap;
+      font-size: 36px;
+      margin-bottom: 20px;
     }
 
     .status-box {
-      background: white;
-      border-radius: 16px;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
-      padding: 20px;
-      width: 250px;
-      transition: all 0.3s ease;
-    }
-
-    .status-box h2 {
-      font-size: 22px;
-      margin-bottom: 10px;
-    }
-
-    .status-img {
-      width: 100px;
-      height: 100px;
-      object-fit: cover;
-      margin-top: 10px;
-    }
-
-    .status-text {
-      font-size: 20px;
+      font-size: 48px;
       font-weight: bold;
-      margin-top: 10px;
+      padding: 20px 40px;
+      border-radius: 20px;
+      display: inline-block;
+      min-width: 250px;
+      transition: all 0.5s ease;
+      box-shadow: 0 0 40px rgba(0, 0, 0, 0.2);
     }
 
-    .status-on { color: green; }
-    .status-off { color: red; }
-    .status-mode-on { color: blue; }
-    .status-mode-off { color: orange; }
-
-    .buttons {
-      margin-top: 30px;
+    .status-on {
+      background: linear-gradient(45deg, #a8e063, #56ab2f);
+      color: #1b5e20;
     }
 
-    .buttons button {
-      font-size: 18px;
-      padding: 10px 25px;
-      margin: 5px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background 0.3s ease;
+    .status-off {
+      background: linear-gradient(45deg, #ff6f61, #d32f2f);
+      color: #ffffff;
     }
 
-    .on { background-color: green; color: white; }
-    .off { background-color: red; color: white; }
-    .mode-on { background-color: blue; color: white; }
-    .mode-off { background-color: orange; color: white; }
+    .status-unknown {
+      background: linear-gradient(45deg, #ffd54f, #ffb300);
+      color: #5d4037;
+    }
 
-    .on:hover { background-color: darkgreen; }
-    .off:hover { background-color: darkred; }
-    .mode-on:hover { background-color: darkblue; }
-    .mode-off:hover { background-color: darkorange; }
+    .icon {
+      font-size: 70px;
+      margin-bottom: 20px;
+      animation: pulse 2s infinite;
+      transition: color 0.5s ease;
+    }
 
+    @keyframes pulse {
+      0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+      50% {
+        transform: scale(1.1);
+        opacity: 0.85;
+      }
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
   </style>
 </head>
+
 <body>
 
-  <h1>ควบคุมและแสดงสถานะอุปกรณ์</h1>
-
-  <div class="status-container">
-    <div class="status-box" id="main-status-box">
-      <h2>สถานะอุปกรณ์</h2>
-      <div id="main-status-text" class="status-text status-off">กำลังโหลด...</div>
-      <img id="main-status-img" class="status-img" src="" alt="สถานะหลัก">
-    </div>
-    <div class="status-box" id="mode-status-box">
-      <h2>สถานะโหมด</h2>
-      <div id="mode-status-text" class="status-text status-mode-off">กำลังโหลด...</div>
-      <img id="mode-status-img" class="status-img" src="" alt="สถานะโหมด">
-    </div>
+  <!-- Device 1 -->
+  <div class="container">
+    <h1>สถานะอุปกรณ์ 1</h1>
+    <div class="icon" id="icon1"><i class="fas fa-spinner fa-spin"></i></div>
+    <div id="status-box1" class="status-box status-unknown"><span id="status1">กำลังโหลด...</span></div>
   </div>
 
-  <div class="buttons">
-    <button class="on" onclick="setStatus(1)">เปิด</button>
-    <button class="off" onclick="setStatus(0)">ปิด</button>
-    <button class="mode-on" onclick="setStatus(2)">เปิดโหมด</button>
-    <button class="mode-off" onclick="setStatus(3)">ปิดโหมด</button>
+  <!-- Device 2 -->
+  <div class="container">
+    <h1>สถานะอุปกรณ์ 2</h1>
+    <div class="icon" id="icon2"><i class="fas fa-spinner fa-spin"></i></div>
+    <div id="status-box2" class="status-box status-unknown"><span id="status2">กำลังโหลด...</span></div>
   </div>
 
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyD72nU7DYmbPocaT4gka1JIdFw1bb3mVkM",
-  authDomain: "myg4iot-8b07f.firebaseapp.com",
-  projectId: "myg4iot-8b07f",
-  storageBucket: "myg4iot-8b07f.firebasestorage.app",
-  messagingSenderId: "53490128835",
-  appId: "1:53490128835:web:5eecad470350dc84bd8f76",
-  measurementId: "G-HZXNBRJ6J1"
+      authDomain: "myg4iot-8b07f.firebaseapp.com",
+      projectId: "myg4iot-8b07f",
+      storageBucket: "myg4iot-8b07f.appspot.com",
+      messagingSenderId: "53490128835",
+      appId: "1:53490128835:web:5eecad470350dc84bd8f76",
+      measurementId: "G-HZXNBRJ6J1"
     };
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    const mainText = document.getElementById("main-status-text");
-    const mainImg = document.getElementById("main-status-img");
-    const modeText = document.getElementById("mode-status-text");
-    const modeImg = document.getElementById("mode-status-img");
-
-    const statusInfo = {
-      0: {
-        mainText: "ปิด",
-        mainClass: "status-off",
-        mainImg: "https://cdn-icons-png.flaticon.com/512/1828/1828665.png&quot;,
-        modeText: "ปิดโหมด",
-        modeClass: "status-mode-off",
-        modeImg: "https://cdn-icons-png.flaticon.com/512/3524/3524662.png&quot;
-      },
-      1: {
-        mainText: "เปิด",
-        mainClass: "status-on",
-        mainImg: "https://cdn-icons-png.flaticon.com/512/1828/1828925.png&quot;,
-        modeText: "ปิดโหมด",
-        modeClass: "status-mode-off",
-        modeImg: "https://cdn-icons-png.flaticon.com/512/3524/3524662.png&quot;
-      },
-      2: {
-        mainText: "เปิด",
-        mainClass: "status-on",
-        mainImg: "https://cdn-icons-png.flaticon.com/512/1828/1828925.png&quot;,
-        modeText: "เปิดโหมด",
-        modeClass: "status-mode-on",
-        modeImg: "https://i.pinimg.com/736x/ae/70/70/ae7070ab7e4b5b5f04f3d986efb563cf.jpg&quot;
-      },
-      3: {
-        mainText: "ปิด",
-        mainClass: "status-off",
-        mainImg: "https://cdn-icons-png.flaticon.com/512/1828/1828665.png&quot;,
-        modeText: "ปิดโหมด",
-        modeClass: "status-mode-off",
-        modeImg: "https://cdn-icons-png.flaticon.com/512/3524/3524662.png&quot;
-      }
-    };
-
-    db.collection("devices").doc("device1")
-      .onSnapshot((doc) => {
+    function updateDeviceUI(deviceId, statusEl, boxEl, iconEl) {
+      db.collection("devices").doc(deviceId).onSnapshot((doc) => {
         if (doc.exists) {
           const status = doc.data().status;
-          const s = statusInfo[status] || statusInfo[0];
-
-          mainText.textContent = s.mainText;
-          mainText.className = "status-text " + s.mainClass;
-          mainImg.src = s.mainImg;
-
-          modeText.textContent = s.modeText;
-          modeText.className = "status-text " + s.modeClass;
-          modeImg.src = s.modeImg;
+          if (status === 1) {
+            statusEl.textContent = "เปิด";
+            boxEl.className = "status-box status-on";
+            iconEl.innerHTML = '<i class="fas fa-lightbulb"></i>';
+            iconEl.style.color = "#ffd600";
+          } else if (status === 0) {
+            statusEl.textContent = "ปิด";
+            boxEl.className = "status-box status-off";
+            iconEl.innerHTML = '<i class="fas fa-power-off"></i>';
+            iconEl.style.color = "#ffcccb";
+          } else {
+            statusEl.textContent = "ไม่ทราบสถานะ";
+            boxEl.className = "status-box status-unknown";
+            iconEl.innerHTML = '<i class="fas fa-question-circle"></i>';
+            iconEl.style.color = "#fff59d";
+          }
         } else {
-          mainText.textContent = "ไม่มีข้อมูล";
-          modeText.textContent = "ไม่มีข้อมูล";
+          statusEl.textContent = "ไม่มีข้อมูล";
+          boxEl.className = "status-box status-unknown";
+          iconEl.innerHTML = '<i class="fas fa-exclamation-triangle"></i>';
+          iconEl.style.color = "#ffca28";
         }
       });
-
-    function setStatus(value) {
-      db.collection("devices").doc("device1").set({ status: value })
-        .then(() => console.log("สถานะอัปเดต:", value))
-        .catch((error) => console.error("เกิดข้อผิดพลาด:", error));
     }
+
+    updateDeviceUI("device1", document.getElementById("status1"), document.getElementById("status-box1"), document.getElementById("icon1"));
+    updateDeviceUI("device2", document.getElementById("status2"), document.getElementById("status-box2"), document.getElementById("icon2"));
   </script>
 
 </body>
+
 </html>
