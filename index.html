@@ -1,0 +1,93 @@
+
+  
+
+  <!DOCTYPE html>
+  <html lang="th">
+
+  <head>
+    <meta charset="UTF-8">
+    <title>ควบคุมอุปกรณ์</title> <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    <!-- Google Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: 'Prompt', sans-serif;
+        background: linear-gradient(135deg, #182848, #4b6cb7);
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+      }
+
+      .control-container {
+        text-align: center;
+        background: rgba(255, 255, 255, 0.07);
+        padding: 50px;
+        border-radius: 30px;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 0 40px rgba(0, 0, 0, 0.2);
+        animation: fadeIn 1s ease;
+      }
+
+      h1 {
+        font-size: 40px;
+        margin-bottom: 30px;
+      }
+
+      .button {
+        font-size: 28px;
+        padding: 20px 60px;
+        border: none;
+        border-radius: 15px;
+        margin: 15px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: background 0.3s, transform 0.2s;
+        color: white;
+      }
+
+      .button:hover {
+        transform: scale(1.05);
+      }
+
+      .on-btn {
+        background: linear-gradient(45deg, #a8e063, #56ab2f);
+      }
+
+      .off-btn {
+        background: linear-gradient(45deg, #ff6f61, #d32f2f);
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="control-container">
+      <h1>ควบคุมอุปกรณ์</h1> <button class="button on-btn" onclick="setStatus(1)"> <i class="fas fa-power-off"></i> เปิด
+      </button> <button class="button off-btn" onclick="setStatus(0)"> <i class="fas fa-power-off"></i> ปิด </button>
+    </div>
+    <script> const firebaseConfig = { apiKey: "AIzaSyD72nU7DYmbPocaT4gka1JIdFw1bb3mVkM", authDomain: "myg4iot-8b07f.firebaseapp.com", projectId: "myg4iot-8b07f", storageBucket: "myg4iot-8b07f.firebasestorage.app", messagingSenderId: "53490128835", appId: "1:53490128835:web:5eecad470350dc84bd8f76", measurementId: "G-HZXNBRJ6J1" }; firebase.initializeApp(firebaseConfig); const db = firebase.firestore(); function setStatus(value) { db.collection("devices").doc("device1").set({ status: value }, { merge: true }).then(() => { alert(value === 1 ? "อุปกรณ์เปิดแล้ว" : "อุปกรณ์ปิดแล้ว"); }).catch((error) => { console.error("เกิดข้อผิดพลาด: ", error); alert("ไม่สามารถเปลี่ยนสถานะได้"); }); } </script>
+  </body>
+
+  </html>
+
+</body>
+
+</html>
