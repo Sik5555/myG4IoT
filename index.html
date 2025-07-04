@@ -1,93 +1,107 @@
+<!DOCTYPE html>
+<html lang="th">
 
-  
+<head>
+  <meta charset="UTF-8">
+  <title>ควบคุมอุปกรณ์ (Toggle)</title> <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script> <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Prompt', sans-serif;
+      background: linear-gradient(135deg, #182848, #4b6cb7);
+      color: white;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
 
-  <!DOCTYPE html>
-  <html lang="th">
+    .container {
+      text-align: center;
+      background: rgba(255, 255, 255, 0.07);
+      padding: 50px 60px;
+      border-radius: 30px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 0 40px rgba(0, 0, 0, 0.25);
+    }
 
-  <head>
-    <meta charset="UTF-8">
-    <title>ควบคุมอุปกรณ์</title> <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
-    <!-- Google Fonts & Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-      body {
-        margin: 0;
-        padding: 0;
-        font-family: 'Prompt', sans-serif;
-        background: linear-gradient(135deg, #182848, #4b6cb7);
-        height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-      }
+    h1 {
+      font-size: 36px;
+      margin-bottom: 30px;
+    }
 
-      .control-container {
-        text-align: center;
-        background: rgba(255, 255, 255, 0.07);
-        padding: 50px;
-        border-radius: 30px;
-        backdrop-filter: blur(10px);
-        box-shadow: 0 0 40px rgba(0, 0, 0, 0.2);
-        animation: fadeIn 1s ease;
-      }
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 100px;
+      height: 50px;
+    }
 
-      h1 {
-        font-size: 40px;
-        margin-bottom: 30px;
-      }
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
 
-      .button {
-        font-size: 28px;
-        padding: 20px 60px;
-        border: none;
-        border-radius: 15px;
-        margin: 15px;
-        cursor: pointer;
-        font-weight: bold;
-        transition: background 0.3s, transform 0.2s;
-        color: white;
-      }
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: 0.4s;
+      border-radius: 34px;
+    }
 
-      .button:hover {
-        transform: scale(1.05);
-      }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 40px;
+      width: 40px;
+      left: 5px;
+      bottom: 5px;
+      background-color: white;
+      transition: 0.4s;
+      border-radius: 50%;
+    }
 
-      .on-btn {
-        background: linear-gradient(45deg, #a8e063, #56ab2f);
-      }
+    input:checked+.slider {
+      background-color: #66bb6a;
+    }
 
-      .off-btn {
-        background: linear-gradient(45deg, #ff6f61, #d32f2f);
-      }
+    input:checked+.slider:before {
+      transform: translateX(50px);
+    }
 
-      @keyframes fadeIn {
-        from {
-          opacity: 0;
-          transform: translateY(20px);
-        }
+    .status-label {
+      margin-top: 20px;
+      font-size: 24px;
+      font-weight: bold;
+    }
 
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-    </style>
-  </head>
+    .status-on {
+      color: #a5ffcc;
+    }
 
-  <body>
-    <div class="control-container">
-      <h1>ควบคุมอุปกรณ์</h1> <button class="button on-btn" onclick="setStatus(1)"> <i class="fas fa-power-off"></i> เปิด
-      </button> <button class="button off-btn" onclick="setStatus(0)"> <i class="fas fa-power-off"></i> ปิด </button>
-    </div>
-    <script> const firebaseConfig = { apiKey: "AIzaSyD72nU7DYmbPocaT4gka1JIdFw1bb3mVkM", authDomain: "myg4iot-8b07f.firebaseapp.com", projectId: "myg4iot-8b07f", storageBucket: "myg4iot-8b07f.firebasestorage.app", messagingSenderId: "53490128835", appId: "1:53490128835:web:5eecad470350dc84bd8f76", measurementId: "G-HZXNBRJ6J1" }; firebase.initializeApp(firebaseConfig); const db = firebase.firestore(); function setStatus(value) { db.collection("devices").doc("device1").set({ status: value }, { merge: true }).then(() => { alert(value === 1 ? "อุปกรณ์เปิดแล้ว" : "อุปกรณ์ปิดแล้ว"); }).catch((error) => { console.error("เกิดข้อผิดพลาด: ", error); alert("ไม่สามารถเปลี่ยนสถานะได้"); }); } </script>
-  </body>
+    .status-off {
+      color: #ffcccc;
+    }
+  </style>
+</head>
 
-  </html>
-
+<body>
+  <div class="container">
+    <h1>ควบคุมอุปกรณ์</h1> <label class="switch"> <input type="checkbox" id="toggleSwitch"> <span class="slider"></span>
+    </label>
+    <div id="statusLabel" class="status-label">กำลังโหลด...</div>
+  </div>
+  <script> const firebaseConfig = { apiKey: "AIzaSyD72nU7DYmbPocaT4gka1JIdFw1bb3mVkM", authDomain: "myg4iot-8b07f.firebaseapp.com", projectId: "myg4iot-8b07f", storageBucket: "myg4iot-8b07f.firebasestorage.app", messagingSenderId: "53490128835", appId: "1:53490128835:web:5eecad470350dc84bd8f76", measurementId: "G-HZXNBRJ6J1" }; firebase.initializeApp(firebaseConfig); const db = firebase.firestore(); const toggle = document.getElementById('toggleSwitch'); const statusLabel = document.getElementById('statusLabel'); // Load initial status db.collection("devices").doc("device1").onSnapshot((doc) => { if (doc.exists) { const status = doc.data().status; toggle.checked = status === 1; updateLabel(status); } }); // Update Firestore on toggle toggle.addEventListener('change', () => { const value = toggle.checked ? 1 : 0; db.collection("devices").doc("device1").set({ status: value }, { merge: true }) .then(() => updateLabel(value)) .catch((err) => { alert("ไม่สามารถเปลี่ยนสถานะได้"); console.error(err); }); }); function updateLabel(status) { if (status === 1) { statusLabel.textContent = "สถานะ: เปิด"; statusLabel.className = "status-label status-on"; } else { statusLabel.textContent = "สถานะ: ปิด"; statusLabel.className = "status-label status-off"; } } </script>
 </body>
 
 </html>
