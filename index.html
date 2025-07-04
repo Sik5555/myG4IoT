@@ -25,6 +25,15 @@
       background-color: red;
       color: white;
     }
+     
+    .Start {
+      background-color: green;
+      color: white;
+    }
+    .Close {
+      background-color: red;
+      color: white;
+    }
   </style>
 </head>
 <body>
@@ -32,6 +41,9 @@
   <h1>ควบคุมสถานะอุปกรณ์</h1>
   <button class="on" onclick="setStatus(1)">เปิด</button>
   <button class="off" onclick="setStatus(0)">ปิด</button>
+  <button class="Start" onclick="setStatus(1)">Start</button>
+  <button class="Close" onclick="setStatus(0)">Close</button>
+
 
   <script>
     // Firebase config
